@@ -4,25 +4,27 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 //signup route
 router.post('/sign-up', async (req, res)=>{
+    console.log("signup route called");
     try{
         const {username, email, password} = req.body;
         if(!username || !email || !password){
-            return res.status(400).json({message: "All fields are required"});
+            res.status(400).json({message: "All fields are required"});
         }
         if(username.length < 5){
-            return res.status(400).json({message: "Username should be atleast 5 characters long."});
+             res.status(400).json({message: "Username should be atleast 5 characters long."});
         }
         if(password.length < 5){
-            return res.status(400).json({message: "Password should be atleast 5 characters long."});
+             res.status(400).json({message: "Password should be atleast 5 characters long."});
         }
 
             
 
         //check if already exists...
+        console.log("checking if user already exists..");
         const existingEmail = await User.findOne({email: email});
         const existingUsername = await User.findOne({username: username});
         if(existingEmail || existingUsername){
-            return res.status(400).json({message: "Username or Email already exists.."});
+             res.status(400).json({message: "Username or Email already exists.."});
         }
 
         
@@ -34,16 +36,18 @@ router.post('/sign-up', async (req, res)=>{
 
         const newUser = new User({username, email, password: hashedPass});
         await newUser.save();
-        return res.status(200).json({message: "Account Created"});
+         res.status(200).json({message: "Account Created"});
     }catch(error){
-        res.status(400).json({ error });
+        res.status(500).json("hello, error in signup function", {error});
+        console.log("errir in creating user", error);
     }
+    res.send("signup route called");
 
 
 
 });
 
-//signin route
+// signin route
 router.post('/sign-in', async (req, res)=>{
     try{
         const {email, password} = req.body;
@@ -57,6 +61,7 @@ router.post('/sign-in', async (req, res)=>{
 
         //check pass
         const isMatch = await bcrypt.compare(password, existingUser.password);
+
         if(!isMatch){
             return res.status(400).json({message: "Invalid Credentials"});
         }

@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 require('./connection/conn')
 
-app.use(cookieParser);
+app.use(cookieParser());
 app.use(express.json());
 //all routes
 app.use('/api/v1', userApi);
